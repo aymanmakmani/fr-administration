@@ -17,7 +17,7 @@ export class UsersController {
   @Post()
   create(@Body() input: any): User {
     
-    const newUser = new User(input.id, input.lastname, input.firstname);
+    const newUser = new User(users.link, input.lastname, input.firstname);
     users.push(newUser);
     return newUser;
   }
