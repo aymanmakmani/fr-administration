@@ -1,4 +1,4 @@
-import { All, Controller, Get , Body , Post , Param ,HttpStatus ,HttpException , Put  } from '@nestjs/common';
+import { All, Controller, Get , Body , Post , Param ,HttpStatus ,HttpException , Put , Delete } from '@nestjs/common';
 import { User } from './user.entity.js';
 
 const users : User[] = [
@@ -38,11 +38,9 @@ export class UsersController {
 }
   @Put(':id')
   update(@Param() parameter: any, @Body() input: any): User {
-    
     const result = users.filter(user => user.id === +parameter.id);
     const user = result[0];
 
-    
     if (user) {
       if (input.lastname !== undefined) {
         user.lastname = input.lastname;
@@ -50,11 +48,23 @@ export class UsersController {
       if (input.firstname !== undefined) {
         user.firstname = input.firstname;
       }
+      return user;
     }
 
-    
-    return user;
+    throw new HttpException(
+      `Could not find a user with the id ${parameter.id}`,
+      HttpStatus.NOT_FOUND,
+    );
+  }
+
+  @Delete(':id')
+  remove(@Param() parameter: any): boolean {
+    const index = users.findIndex(user => user.id === +parameter.id);
+    if (index !== -1) {
+      users.splice(index, 1);
+      return true;
+    }
+    return false;
   }
 
 }
-
