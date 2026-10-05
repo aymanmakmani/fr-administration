@@ -1,4 +1,4 @@
-import { All, Controller, Get , Body , Post , Param ,HttpStatus ,HttpException  } from '@nestjs/common';
+import { All, Controller, Get , Body , Post , Param ,HttpStatus ,HttpException , Put  } from '@nestjs/common';
 import { User } from './user.entity.js';
 
 const users : User[] = [
@@ -36,6 +36,25 @@ export class UsersController {
       HttpStatus.NOT_FOUND,
     );
 }
+  @Put(':id')
+  update(@Param() parameter: any, @Body() input: any): User {
+    
+    const result = users.filter(user => user.id === +parameter.id);
+    const user = result[0];
+
+    
+    if (user) {
+      if (input.lastname !== undefined) {
+        user.lastname = input.lastname;
+      }
+      if (input.firstname !== undefined) {
+        user.firstname = input.firstname;
+      }
+    }
+
+    
+    return user;
+  }
 
 }
 
