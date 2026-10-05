@@ -10,9 +10,9 @@ const users : User[] = [
 ]
 @Controller('users')
 export class UsersController {
-  @Get('all')
-  getAll(): string[] {
-    return ['a', 'b', 'c'];
+  @Get()
+  getAll(): User[] {
+     return users;
   }
   @Post()
   create(@Body() input: any): User {
