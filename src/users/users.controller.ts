@@ -1,4 +1,4 @@
-import { All, Controller, Get } from '@nestjs/common';
+import { All, Controller, Get , Body , Post } from '@nestjs/common';
 import { User } from './user.entity.js';
 
 const users : User[] = [
@@ -14,4 +14,12 @@ export class UsersController {
   getAll(): string[] {
     return ['a', 'b', 'c'];
   }
+  @Post()
+  create(@Body() input: any): User {
+    
+    const newUser = new User(input.id, input.lastname, input.firstname);
+    users.push(newUser);
+    return newUser;
+  }
 }
+
