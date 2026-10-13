@@ -29,7 +29,6 @@ export class UsersController {
     if (user != undefined) {
       return user;
     }
-
     
     throw new HttpException(
       `Could not find a user with the id ${parameter.id}`,
