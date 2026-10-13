@@ -8,6 +8,7 @@ export class UsersService {
       id: 0,
       lastname: 'Doe',
       firstname: 'John',
+      age: 23 ,
     },
   ];
 
