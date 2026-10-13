@@ -19,17 +19,17 @@ export class AssociationsController {
   constructor(private readonly associationsService: AssociationsService) {}
 
   @Get()
-  getAll(): Association[] {
+  getAll(): Promise<Association[]> {
     return this.associationsService.getAll();
   }
 
   @Get(':id/members')
-  getMembers(@Param('id') id: string): User[] {
+  getMembers(@Param('id') id: string): Promise<User[]> {
     return this.associationsService.getMembers(Number(id));
   }
 
   @Get(':id')
-  getById(@Param('id') id: string): Association {
+  getById(@Param('id') id: string): Promise<Association> {
     return this.associationsService.getById(Number(id));
   }
 
@@ -47,7 +47,7 @@ export class AssociationsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): boolean {
+  remove(@Param('id') id: string): Promise<boolean> {
     return this.associationsService.remove(Number(id));
   }
 }

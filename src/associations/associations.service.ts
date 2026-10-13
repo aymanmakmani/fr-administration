@@ -1,22 +1,24 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Equal, Repository } from 'typeorm';
 import { User } from '../users/user.entity.js';
 import { UsersService } from '../users/users.service.js';
 import { Association } from './association.entity.js';
 
 @Injectable()
 export class AssociationsService {
-  private readonly associations: Association[];
+  constructor(
+    @InjectRepository(Association)
+    private readonly repository: Repository<Association>,
+    private readonly usersService: UsersService,
+  ) {}
 
-  constructor(private readonly usersService: UsersService) {
-    this.associations = [new Association(0, 'Association de démonstration')];
+  async getAll(): Promise<Association[]> {
+    return this.repository.find();
   }
 
-  getAll(): Association[] {
-    return this.associations;
-  }
-
-  getById(id: number): Association {
-    const association = this.associations.find((item) => item.id === id);
+  async getById(id: number): Promise<Association> {
+    const association = await this.repository.findOneBy({ id: Equal(id) });
 
     if (!association) {
       throw new HttpException(
@@ -28,29 +30,23 @@ export class AssociationsService {
     return association;
   }
 
-  getMembers(id: number): User[] {
-    return this.getById(id).users;
+  async getMembers(id: number): Promise<User[]> {
+    return (await this.getById(id)).users;
   }
 
   async create(name: string, idUsers: number[] = []): Promise<Association> {
-    const id =
-      this.associations.reduce(
-        (maxId, association) => Math.max(maxId, association.id),
-        -1,
-      ) + 1;
     const users = await Promise.all(
       idUsers.map((userId) => this.usersService.getById(userId)),
     );
-    const association = new Association(id, name, users);
-    this.associations.push(association);
-    return association;
+    const association = this.repository.create({ name, users });
+    return this.repository.save(association);
   }
 
   async update(
     id: number,
     input: { name?: string; idUsers?: number[] },
   ): Promise<Association> {
-    const association = this.getById(id);
+    const association = await this.getById(id);
 
     if (input.name !== undefined) {
       association.name = input.name;
@@ -61,20 +57,19 @@ export class AssociationsService {
       );
     }
 
-    return association;
+    return this.repository.save(association);
   }
 
-  remove(id: number): boolean {
-    const index = this.associations.findIndex((item) => item.id === id);
+  async remove(id: number): Promise<boolean> {
+    const result = await this.repository.delete(id);
 
-    if (index === -1) {
-      throw new HttpException(
-        `Could not find an association with the id ${id}`,
-        HttpStatus.NOT_FOUND,
-      );
+    if (result.affected) {
+      return true;
     }
 
-    this.associations.splice(index, 1);
-    return true;
+    throw new HttpException(
+      `Could not find an association with the id ${id}`,
+      HttpStatus.NOT_FOUND,
+    );
   }
 }
