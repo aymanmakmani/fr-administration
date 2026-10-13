@@ -1,7 +1,27 @@
+import {
+  JoinTable,
+  ManyToMany,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from '../users/user.entity.js';
+
+@Entity()
 export class Association {
-  constructor(
-    public id: number,
-    public name: string,
-    public idUsers: number[] = [],
-  ) {}
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @ManyToMany(() => User, { eager: true })
+  @JoinTable()
+  users: User[];
+
+  constructor(id: number, name: string, users: User[] = []) {
+    this.id = id;
+    this.name = name;
+    this.users = users;
+  }
 }

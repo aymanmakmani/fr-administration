@@ -5,11 +5,15 @@ import { Association } from './association.entity.js';
 
 @Injectable()
 export class AssociationsService {
-  constructor(private readonly usersService: UsersService) {}
+  private readonly associations: Association[];
 
-  private readonly associations: Association[] = [
-    new Association(0, 'Association de démonstration', [0]),
-  ];
+  constructor(private readonly usersService: UsersService) {
+    this.associations = [
+      new Association(0, 'Association de démonstration', [
+        this.usersService.getById(0),
+      ]),
+    ];
+  }
 
   getAll(): Association[] {
     return this.associations;
@@ -29,28 +33,34 @@ export class AssociationsService {
   }
 
   getMembers(id: number): User[] {
-    const association = this.getById(id);
-    return association.idUsers.map((userId) => this.usersService.getById(userId));
+    return this.getById(id).users;
   }
 
   create(name: string, idUsers: number[] = []): Association {
-    const id = this.associations.reduce(
-      (maxId, association) => Math.max(maxId, association.id),
-      -1,
-    ) + 1;
-    const association = new Association(id, name, idUsers);
+    const id =
+      this.associations.reduce(
+        (maxId, association) => Math.max(maxId, association.id),
+        -1,
+      ) + 1;
+    const users = idUsers.map((userId) => this.usersService.getById(userId));
+    const association = new Association(id, name, users);
     this.associations.push(association);
     return association;
   }
 
-  update(id: number, input: Partial<Pick<Association, 'name' | 'idUsers'>>): Association {
+  update(
+    id: number,
+    input: { name?: string; idUsers?: number[] },
+  ): Association {
     const association = this.getById(id);
 
     if (input.name !== undefined) {
       association.name = input.name;
     }
     if (input.idUsers !== undefined) {
-      association.idUsers = input.idUsers;
+      association.users = input.idUsers.map((userId) =>
+        this.usersService.getById(userId),
+      );
     }
 
     return association;

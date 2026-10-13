@@ -3,7 +3,9 @@ import { createObserveModule } from '@nestjs/observe';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { Association } from './associations/association.entity.js';
 import { AssociationsModule } from './associations/associations.module.js';
+import { User } from './users/user.entity.js';
 import { UsersModule } from './users/users.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
@@ -20,7 +22,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     TypeOrmModule.forRoot({
       type: 'better-sqlite3',
       database: 'mydatabase.db',
-      entities: [],
+      entities: [User, Association],
       synchronize: true,
     }),
     UsersModule,

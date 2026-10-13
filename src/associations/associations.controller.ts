@@ -1,7 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { User } from '../users/user.entity.js';
 import { Association } from './association.entity.js';
 import { AssociationsService } from './associations.service.js';
+
+type CreateAssociationInput = { name: string; idUsers?: number[] };
+type UpdateAssociationInput = { name?: string; idUsers?: number[] };
 
 @Controller('associations')
 export class AssociationsController {
@@ -23,14 +34,14 @@ export class AssociationsController {
   }
 
   @Post()
-  create(@Body() input: Pick<Association, 'name'> & Partial<Pick<Association, 'idUsers'>>): Association {
+  create(@Body() input: CreateAssociationInput): Association {
     return this.associationsService.create(input.name, input.idUsers ?? []);
   }
 
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Body() input: Partial<Pick<Association, 'name' | 'idUsers'>>,
+    @Body() input: UpdateAssociationInput,
   ): Association {
     return this.associationsService.update(Number(id), input);
   }
