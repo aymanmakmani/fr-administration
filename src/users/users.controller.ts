@@ -18,7 +18,7 @@ export class UsersController {
 
   @Post()
   create(@Body() input: any): User {
-    return this.usersService.create(input.firstname, input.lastname);
+    return this.usersService.create(input.firstname, input.lastname, input.age);
   }
 
   @Put(':id')

@@ -27,8 +27,8 @@ export class UsersService {
     );
   }
 
-  create(firstname: string, lastname: string): User {
-    const newUser = new User(this.users.length, lastname, firstname);
+  create(firstname: string, lastname: string , age: number): User {
+    const newUser = new User(this.users.length, lastname, firstname , age);
     this.users.push(newUser);
     return newUser;
   }
