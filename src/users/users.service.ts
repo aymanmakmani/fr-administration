@@ -1,49 +1,23 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Equal, Repository } from 'typeorm';
 import { User } from './user.entity.js';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [
-    {
-      id: 0,
-      lastname: 'Doe',
-      firstname: 'John',
-      age: 23 ,
-    },
-  ];
+  constructor(
+    @InjectRepository(User)
+    private readonly repository: Repository<User>,
+  ) {}
 
-  getAll(): User[] {
-    return this.users;
+  async getAll(): Promise<User[]> {
+    return this.repository.find();
   }
 
-  getById(id: number): User {
-    const user = this.users.find((u) => u.id === id);
-    if (user != undefined) {
-      return user;
-    }
-    throw new HttpException(
-      `Could not find a user with the id ${id}`,
-      HttpStatus.NOT_FOUND,
-    );
-  }
-
-  create(firstname: string, lastname: string , age: number): User {
-    const newUser = new User(this.users.length, lastname, firstname , age);
-    this.users.push(newUser);
-    return newUser;
-  }
-
-  update(id: number, input: any): User {
-    const result = this.users.filter((user) => user.id === id);
-    const user = result[0];
+  async getById(id: number): Promise<User> {
+    const user = await this.repository.findOneBy({ id: Equal(id) });
 
     if (user) {
-      if (input.lastname !== undefined) {
-        user.lastname = input.lastname;
-      }
-      if (input.firstname !== undefined) {
-        user.firstname = input.firstname;
-      }
       return user;
     }
 
@@ -53,12 +27,41 @@ export class UsersService {
     );
   }
 
-  remove(id: number): boolean {
-    const index = this.users.findIndex((user) => user.id === id);
-    if (index !== -1) {
-      this.users.splice(index, 1);
+  async create(
+    firstname: string,
+    lastname: string,
+    age: number,
+  ): Promise<User> {
+    const user = this.repository.create({ firstname, lastname, age });
+    return this.repository.save(user);
+  }
+
+  async update(
+    id: number,
+    input: Partial<Pick<User, 'firstname' | 'lastname' | 'age'>>,
+  ): Promise<User> {
+    const user = await this.getById(id);
+
+    if (input.lastname !== undefined) {
+      user.lastname = input.lastname;
+    }
+    if (input.firstname !== undefined) {
+      user.firstname = input.firstname;
+    }
+    if (input.age !== undefined) {
+      user.age = input.age;
+    }
+
+    return this.repository.save(user);
+  }
+
+  async remove(id: number): Promise<boolean> {
+    const result = await this.repository.delete(id);
+
+    if (result.affected) {
       return true;
     }
+
     throw new HttpException(
       `Could not find a user with the id ${id}`,
       HttpStatus.NOT_FOUND,

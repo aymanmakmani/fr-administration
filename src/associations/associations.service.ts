@@ -8,11 +8,7 @@ export class AssociationsService {
   private readonly associations: Association[];
 
   constructor(private readonly usersService: UsersService) {
-    this.associations = [
-      new Association(0, 'Association de démonstration', [
-        this.usersService.getById(0),
-      ]),
-    ];
+    this.associations = [new Association(0, 'Association de démonstration')];
   }
 
   getAll(): Association[] {
@@ -36,30 +32,32 @@ export class AssociationsService {
     return this.getById(id).users;
   }
 
-  create(name: string, idUsers: number[] = []): Association {
+  async create(name: string, idUsers: number[] = []): Promise<Association> {
     const id =
       this.associations.reduce(
         (maxId, association) => Math.max(maxId, association.id),
         -1,
       ) + 1;
-    const users = idUsers.map((userId) => this.usersService.getById(userId));
+    const users = await Promise.all(
+      idUsers.map((userId) => this.usersService.getById(userId)),
+    );
     const association = new Association(id, name, users);
     this.associations.push(association);
     return association;
   }
 
-  update(
+  async update(
     id: number,
     input: { name?: string; idUsers?: number[] },
-  ): Association {
+  ): Promise<Association> {
     const association = this.getById(id);
 
     if (input.name !== undefined) {
       association.name = input.name;
     }
     if (input.idUsers !== undefined) {
-      association.users = input.idUsers.map((userId) =>
-        this.usersService.getById(userId),
+      association.users = await Promise.all(
+        input.idUsers.map((userId) => this.usersService.getById(userId)),
       );
     }
 

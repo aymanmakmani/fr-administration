@@ -34,7 +34,7 @@ export class AssociationsController {
   }
 
   @Post()
-  create(@Body() input: CreateAssociationInput): Association {
+  create(@Body() input: CreateAssociationInput): Promise<Association> {
     return this.associationsService.create(input.name, input.idUsers ?? []);
   }
 
@@ -42,7 +42,7 @@ export class AssociationsController {
   update(
     @Param('id') id: string,
     @Body() input: UpdateAssociationInput,
-  ): Association {
+  ): Promise<Association> {
     return this.associationsService.update(Number(id), input);
   }
 
