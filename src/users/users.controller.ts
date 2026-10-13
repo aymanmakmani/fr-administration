@@ -1,69 +1,33 @@
-import { All, Controller, Get , Body , Post , Param ,HttpStatus ,HttpException , Put , Delete } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { UsersService } from './users.service.js';
 import { User } from './user.entity.js';
 
-const users : User[] = [
-    {
-        id: 0,
-        lastname: 'Doe',
-        firstname: 'John'
-    }
-]
 @Controller('users')
 export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
   @Get()
   getAll(): User[] {
-     return users;
+    return this.usersService.getAll();
   }
+
+  @Get(':id')
+  getById(@Param('id') id: string): User {
+    return this.usersService.getById(+id);
+  }
+
   @Post()
   create(@Body() input: any): User {
-    
-    const newUser = new User(users.length, input.lastname, input.firstname);
-    users.push(newUser);
-    return newUser;
+    return this.usersService.create(input.firstname, input.lastname);
   }
-  @Get(':id')
-  getById(@Param() parameter: any): User {
-    const userId = +parameter.id;
-    const user = users.find((u) => u.id === userId);
 
-    if (user != undefined) {
-      return user;
-    }
-    
-    throw new HttpException(
-      `Could not find a user with the id ${parameter.id}`,
-      HttpStatus.NOT_FOUND,
-    );
-}
   @Put(':id')
-  update(@Param() parameter: any, @Body() input: any): User {
-    const result = users.filter(user => user.id === +parameter.id);
-    const user = result[0];
-
-    if (user) {
-      if (input.lastname !== undefined) {
-        user.lastname = input.lastname;
-      }
-      if (input.firstname !== undefined) {
-        user.firstname = input.firstname;
-      }
-      return user;
-    }
-
-    throw new HttpException(
-      `Could not find a user with the id ${parameter.id}`,
-      HttpStatus.NOT_FOUND,
-    );
+  update(@Param('id') id: string, @Body() input: any): User {
+    return this.usersService.update(+id, input);
   }
 
   @Delete(':id')
-  remove(@Param() parameter: any): boolean {
-    const index = users.findIndex(user => user.id === +parameter.id);
-    if (index !== -1) {
-      users.splice(index, 1);
-      return true;
-    }
-    return false;
+  remove(@Param('id') id: string): boolean {
+    return this.usersService.remove(+id);
   }
-
 }
