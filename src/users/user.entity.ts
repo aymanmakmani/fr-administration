@@ -14,6 +14,8 @@ export class User {
   @Column()
   age: number;
 
+  https://github.com/aymanmakmani/fr-administration.git
+
   constructor(id: number, lastname: string, firstname: string, age: number) {
     this.id = id;
     this.lastname = lastname;
