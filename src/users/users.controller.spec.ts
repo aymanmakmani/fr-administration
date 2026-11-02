@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { UsersController } from './users.controller.js';
 import { User } from './user.entity.js';
 import { UsersService } from './users.service.js';
@@ -59,6 +58,46 @@ describe('UsersController', () => {
 
       await expect(controller.getById('1')).resolves.toEqual(expected);
       expect(service.getById).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('create', () => {
+    it('should create and return a user', async () => {
+      const input = { firstname: 'Jane', lastname: 'Doe', age: 25 };
+      const expected: User = { id: 2, ...input };
+      vi.spyOn(service, 'create').mockResolvedValue(expected);
+
+      await expect(controller.create(input)).resolves.toEqual(expected);
+      expect(service.create).toHaveBeenCalledWith(
+        input.firstname,
+        input.lastname,
+        input.age,
+      );
+    });
+  });
+
+  describe('update', () => {
+    it('should update and return a user', async () => {
+      const input = { firstname: 'Janette', age: 32 };
+      const expected: User = {
+        id: 1,
+        firstname: 'Janette',
+        lastname: 'Doe',
+        age: 32,
+      };
+      vi.spyOn(service, 'update').mockResolvedValue(expected);
+
+      await expect(controller.update('1', input)).resolves.toEqual(expected);
+      expect(service.update).toHaveBeenCalledWith(1, input);
+    });
+  });
+
+  describe('remove', () => {
+    it('should remove a user', async () => {
+      vi.spyOn(service, 'remove').mockResolvedValue(true);
+
+      await expect(controller.remove('1')).resolves.toBe(true);
+      expect(service.remove).toHaveBeenCalledWith(1);
     });
   });
 });
