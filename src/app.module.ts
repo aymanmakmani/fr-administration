@@ -28,6 +28,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     }),
     UsersModule,
     AssociationsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
