@@ -7,6 +7,7 @@ import { Association } from './associations/association.entity.js';
 import { AssociationsModule } from './associations/associations.module.js';
 import { User } from './users/user.entity.js';
 import { UsersModule } from './users/users.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
