@@ -5,6 +5,7 @@ import { User } from '../users/user.entity.js';
 import { UsersModule } from '../users/users.module.js';
 import { AuthService } from './auth.service.js';
 import { LocalStrategy } from './local.strategy.js';
+import { AuthController } from './auth.controller.js';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { LocalStrategy } from './local.strategy.js';
     TypeOrmModule.forFeature([User]),
   ],
   providers: [AuthService, LocalStrategy],
+  controllers: [AuthController],
   exports: [AuthService],
 })
 export class AuthModule {}
