@@ -6,12 +6,13 @@ import {
   Delete,
   Body,
   Param,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service.js';
 import { User } from './user.entity.js';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserInput } from './user-input.js';
-
 
 type CreateUserInput = Pick<User, 'firstname' | 'lastname' | 'age'>;
 type UpdateUserInput = Partial<CreateUserInput>;
@@ -21,6 +22,7 @@ type UpdateUserInput = Partial<CreateUserInput>;
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiOkResponse({
     description: 'List of all users retrieved successfully.',
