@@ -1,5 +1,6 @@
 import { HttpException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { User } from './user.entity.js';
 import { UsersService } from './users.service.js';
 
@@ -55,15 +56,21 @@ describe('UsersService', () => {
 
   describe('create', () => {
     it('should create and save a user', async () => {
-      const input = { firstname: 'Jane', lastname: 'Doe', age: 25 };
+      const input = { firstname: 'Jane', lastname: 'Doe', age: 25, password: 'valid_password' };
       const created: User = { id: 2, ...input };
       repository.create.mockReturnValue(created);
       repository.save.mockResolvedValue(created);
 
       await expect(
-        service.create(input.firstname, input.lastname, input.age),
+        service.create(input.firstname, input.lastname, input.age, input.password),
       ).resolves.toEqual(created);
-      expect(repository.create).toHaveBeenCalledWith(input);
+      const createdInput = repository.create.mock.calls[0][0];
+      expect(createdInput).toMatchObject({
+        firstname: input.firstname,
+        lastname: input.lastname,
+        age: input.age,
+      });
+      expect(await bcrypt.compare(input.password, createdInput.password)).toBe(true);
       expect(repository.save).toHaveBeenCalledWith(created);
     });
   });

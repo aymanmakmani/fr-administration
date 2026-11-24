@@ -6,7 +6,9 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiCreatedResponse, ApiOkResponse, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/user.entity.js';
 import { Association } from './association.entity.js';
@@ -51,6 +53,7 @@ export class UpdateAssociationInput {
 
 @ApiTags('associations') 
 @Controller('associations')
+@UseGuards(AuthGuard('jwt'))
 export class AssociationsController {
   constructor(private readonly associationsService: AssociationsService) {}
 

@@ -63,7 +63,7 @@ describe('UsersController', () => {
 
   describe('create', () => {
     it('should create and return a user', async () => {
-      const input = { firstname: 'Jane', lastname: 'Doe', age: 25 };
+      const input = { firstname: 'Jane', lastname: 'Doe', age: 25, password: 'valid_password' };
       const expected: User = { id: 2, ...input };
       vi.spyOn(service, 'create').mockResolvedValue(expected);
 
@@ -72,6 +72,7 @@ describe('UsersController', () => {
         input.firstname,
         input.lastname,
         input.age,
+        input.password,
       );
     });
   });

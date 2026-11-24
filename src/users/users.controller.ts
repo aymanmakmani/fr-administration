@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service.js';
 import { User } from './user.entity.js';
@@ -19,10 +10,10 @@ type UpdateUserInput = Partial<CreateUserInput>;
 
 @ApiTags('users')
 @Controller('users')
+@UseGuards(AuthGuard('jwt'))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiOkResponse({
     description: 'List of all users retrieved successfully.',
@@ -44,7 +35,7 @@ export class UsersController {
     description: 'The user has been successfully created.',
   })
   create(@Body() input: UserInput): Promise<User> {
-    return this.usersService.create(input.firstname, input.lastname, input.age);
+    return this.usersService.create(input.firstname, input.lastname, input.age, input.password);
   }
 
   @Put(':id')

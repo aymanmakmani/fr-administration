@@ -14,12 +14,16 @@ export class User {
   @Column()
   age: number;
 
+  @Column({ select: false, nullable: true })
+  password?: string;
+
   
 
-  constructor(id: number, lastname: string, firstname: string, age: number) {
+  constructor(id: number, lastname: string, firstname: string, age: number, password?: string) {
     this.id = id;
     this.lastname = lastname;
     this.firstname = firstname;
     this.age = age;
+    this.password = password;
   }
 }

@@ -42,7 +42,9 @@ export class UsersService {
       age,
       password: hashedPassword,
     });
-    return this.repository.save(user);
+    const savedUser = await this.repository.save(user);
+    delete savedUser.password;
+    return savedUser;
   }
 
   async update(

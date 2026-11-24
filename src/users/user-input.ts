@@ -22,4 +22,11 @@ export class UserInput {
     type: Number,
   })
   public age: number;
+
+  @ApiProperty({
+    description: 'The password used to authenticate the user',
+    example: 'valid_password',
+    type: String,
+  })
+  public password: string;
 }

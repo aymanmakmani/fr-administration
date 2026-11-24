@@ -14,8 +14,12 @@ export class AuthService {
   ) {}
 
   public async validateUser(id: number, password: string): Promise<User | undefined> {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (user && (await bcrypt.compare(password, user.password))) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: { id: true, firstname: true, lastname: true, age: true, password: true },
+    });
+    if (user?.password && (await bcrypt.compare(password, user.password))) {
+      delete user.password;
       return user;
     }
     return undefined;
